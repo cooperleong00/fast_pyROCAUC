@@ -2,11 +2,7 @@
 #include <algorithm>
 #include <omp.h>
 #include <cstdlib>
-#include <iostream>
-#include "Windows.h"
-
-#define data_size_t size_t
-#define label_t size_t
+#include "metric.h"
 
 
 inline int OMP_NUM_THREADS() {
@@ -71,7 +67,7 @@ static void ParallelSort(_RanIt _First, _RanIt _Last, _Pr _Pred, _VTRanIt*) {
 }
 
 
-double roc_auc(const double* score, const double* label_,  data_size_t num_data_){
+double c_roc_auc_score(const double* label_, const double* score, data_size_t num_data_){
   // get indices sorted by score, descent order
   std::vector<data_size_t> sorted_idx;
   for (data_size_t i = 0; i < num_data_; ++i) {
@@ -110,22 +106,4 @@ double roc_auc(const double* score, const double* label_,  data_size_t num_data_
     auc = accum / (sum_pos *(sum_weights_ - sum_pos));
   }
   return auc;
-}
-
-
-int main(){
-  double test_label[500000];
-  double test_pred[500000];
-  for(int i=0;i<500000;i++){
-    test_pred[i] = rand()/RAND_MAX;
-    test_label[i] = rand()%2;
-  }
-  DWORD t1,t2;
-  t1 = GetTickCount();
-  double auc = roc_auc(test_pred, test_label, 500000);
-  t2 = GetTickCount();
-  std::cout<< auc << std::endl;
-  std::cout<<  (t2 - t1)*1.0/1000 << std::endl;
-  system("pause");
-  return 0;
 }
